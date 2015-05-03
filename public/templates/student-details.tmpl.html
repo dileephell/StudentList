@@ -1,0 +1,37 @@
+<div id="details-view">
+	<h2>Student Details</h2>
+	<div class="row" ng-cloak>
+		<div class="col-lg-3">
+		<label for"student-name">Name:</label>
+		</div>
+		<div ng-hide="student.isEditable==true" class="col-lg-3" ng-bind="student.name">
+		<label  ng-bind="student.name"></label>
+		</div>
+		<div class="col-lg-3" ng-show="student.isEditable==true">
+		<input class="form-control" ng-model="student.number" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-3">
+		<label for"student-email">Email:</label>
+		</div>
+		<div ng-hide="student.isEditable==true" class="col-lg-3" ng-bind="student.email"></div>
+		<div class="col-lg-3" ng-show="student.isEditable==true"> 
+		<input class="form-control" ng-model="student.email" />
+		</div>
+	</div>
+	<div class="row">
+	<div class="col-lg-3">
+		<label for"student-email">Number:</label>
+		</div>
+		<div ng-hide="student.isEditable==true" class="col-lg-3" ng-bind="student.number">
+		</div>
+		<div class="col-lg-3" ng-show="student.isEditable==true"> 
+		<input class="form-control" ng-model="student.number" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg-3" ng-hide="student.isEditable==true"><button class="btn btn-warning btn-block" ng-click="edit(student)">Edit</button></div>
+		<div class="col-lg-3" ng-show="student.isEditable==true"><button class="btn btn-warning btn-block" ng-click="update(student)">Save</button></div>
+	</div>
+</div>
