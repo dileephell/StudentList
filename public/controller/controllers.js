@@ -1,49 +1,66 @@
-var myApp = angular.module('myApp', []);
-myApp.controller('AppCtrl', ['$scope', '$http', function($scope, $http) {
+angular.module('myApp')
+.controller('StudentController', ['$scope', 'StudentService', function($scope, StudentService) {
     console.log("Hello World from controller");
-
-
-var refresh = function() {
-  $http.get('/studentlist').success(function(response) {
-    console.log("I got the data I requested");
-    $scope.studentlist = response;
-    $scope.student = "";
+var init = function() {
+  $scope.newStudent={};
+  $scope.studentList=[];
+  StudentService.getAllStudents().then(function(students){
+    angular.forEach(students,function(elem,index){
+        this.push(elem);
+      },$scope.studentList);
   });
 };
 
-refresh();
+init();
 
 $scope.addStudent = function() {
-  console.log($scope.student);
-  $http.post('/studentlist', $scope.student).success(function(response) {
-    console.log(response);
-    refresh();
+  console.log($scope.newStudent);
+  StudentService.addStudent($scope.newStudent).then(function(response){
+    var newStudentRef=angular.copy($scope.newStudent);
+    $scope.studentList.push(newStudentRef);
+    $scope.newStudent={};
   });
 };
 
-$scope.remove = function(id) {
-  console.log(id);
-  $http.delete('/studentlist/' + id).success(function(response) {
-    refresh();
+$scope.remove = function(studentData) {
+  console.log('In delete'+studentData._id);
+  StudentService.deleteStudent(studentData._id).then(function(){
+    $scope.studentList.splice($scope.studentList.indexOf(studentData),1);
   });
 };
 
-$scope.edit = function(id) {
-  console.log(id);
-  $http.get('/studentlist/' + id).success(function(response) {
-    $scope.student = response;
-  });
-};  
+ 
 
-$scope.update = function() {
-  console.log($scope.student._id);
-  $http.put('/studentlist/' + $scope.student._id, $scope.student).success(function(response) {
-    refresh();
-  })
+$scope.update = function(studentData) {
+  console.log(studentData._id);
+  StudentService.updateStudent(studentData).then(function(){
+    studentData.isEditable=false;
+  });
+
 };
 
 $scope.deselect = function() {
   $scope.student = "";
 }
 
+}])
+var studentDetailsController=angular.module('myApp').controller('StudentDetailsController',['$scope','StudentService','initData',
+  function($scope,StudentService,initData){
+$scope.student=initData;
+$scope.edit = function(student) {
+  student.isEditable=true;
+}; 
+
 }]);﻿
+studentDetailsController.init=['$route','$q','StudentService', function($route,$q,StudentService){
+            var deferred = $q.defer();
+            var studentId=$route.current.params.studentId;
+            console.log('In get by student id'+studentId);
+             StudentService.getStudentById(studentId).then(function(response){
+              console.log('Deferred is resolved'+angular.toJson(response));
+              deferred.resolve(response);
+             },function(error){
+              deferred.reject(error);
+             });
+             return deferred.promise;
+          }];
